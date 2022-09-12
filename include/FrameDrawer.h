@@ -29,8 +29,7 @@
 
 #include<mutex>
 #include <unordered_set>
-
-
+#include<string>
 namespace ORB_SLAM3
 {
 
@@ -51,7 +50,12 @@ public:
     cv::Mat DrawRightFrame(float imageScale=1.f);
 
     bool both;
-
+    
+    // timestamp - tracked
+    vector<std::string> mvtracked_point;
+    vector<double> mvtracked_time;
+    vector<int> mvtracked_num;
+    
 protected:
 
     void DrawTextInfo(cv::Mat &im, int nState, cv::Mat &imText);
@@ -60,7 +64,7 @@ protected:
     cv::Mat mIm, mImRight;
     int N;
     vector<cv::KeyPoint> mvCurrentKeys,mvCurrentKeysRight;
-    vector<bool> mvbMap, mvbVO;
+    vector<bool> mvbMap, mvbVO;// mvbMap
     bool mbOnlyTracking;
     int mnTracked, mnTrackedVO;
     vector<cv::KeyPoint> mvIniKeys;
@@ -83,6 +87,8 @@ protected:
 
     map<long unsigned int, cv::Point2f> mmProjectPoints;
     map<long unsigned int, cv::Point2f> mmMatchedInImage;
+    
+
 
 };
 

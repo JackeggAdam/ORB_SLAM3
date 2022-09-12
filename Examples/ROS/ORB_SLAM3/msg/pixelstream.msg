@@ -1,0 +1,4 @@
+float64 timestamp
+uint8 pixelNum
+string pixelstring
+string poseTimestamp
