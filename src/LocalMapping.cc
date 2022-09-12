@@ -197,33 +197,43 @@ void LocalMapping::Run()
                 vdKFCulling_ms.push_back(timeKFCulling_ms);
 #endif
 
-                if ((mTinit<50.0f) && mbInertial)
+                if ((mTinit<50.0f) && mbInertial)//60
                 {
                     if(mpCurrentKeyFrame->GetMap()->isImuInitialized() && mpTracker->mState==Tracking::OK) // Enter here everytime local-mapping is called
                     {
                         if(!mpCurrentKeyFrame->GetMap()->GetIniertialBA1()){
-                            if (mTinit>5.0f)
+                            if (mTinit>5.0f)//5
                             {
                                 cout << "start VIBA 1" << endl;
                                 mpCurrentKeyFrame->GetMap()->SetIniertialBA1();
                                 if (mbMonocular)
                                     InitializeIMU(1.f, 1e5, true);
                                 else
-                                    InitializeIMU(1.f, 1e5, true);
+                                    InitializeIMU(1e2, 1e5, true);
 
                                 cout << "end VIBA 1" << endl;
                             }
                         }
                         else if(!mpCurrentKeyFrame->GetMap()->GetIniertialBA2()){
-                            if (mTinit>15.0f){
+                            if (mTinit>15.0f){//15
                                 cout << "start VIBA 2" << endl;
                                 mpCurrentKeyFrame->GetMap()->SetIniertialBA2();
                                 if (mbMonocular)
                                     InitializeIMU(0.f, 0.f, true);
                                 else
-                                    InitializeIMU(0.f, 0.f, true);
+                                    InitializeIMU(1.f, 1e5, true);// 这里修改了参数，使得IMU VIBA2初始化稳定了很多，但是重力方向在x,y轴依然存在偏移。
 
                                 cout << "end VIBA 2" << endl;
+                                
+                                ofstream f;
+                                f.open("init_GDir.txt", ios_base::app);
+                                f << fixed;
+                                f << mRwg(0,0) << "," << mRwg(0,1) << "," << mRwg(0,2) << endl;
+                                f << mRwg(1,0) << "," << mRwg(1,1) << "," << mRwg(1,2) << endl;
+                                f << mRwg(2,0) << "," << mRwg(2,1) << "," << mRwg(2,2) << endl;
+                                f.close();
+
+                                cout << "Save inti Gravity direction in init_GDir.txt" << endl;
                             }
                         }
 

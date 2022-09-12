@@ -149,16 +149,20 @@ cv::Mat FrameDrawer::DrawFrame(float imageScale)
     }
     else if(state==Tracking::OK) //TRACKING
     {
+        //todo 可视化界面里的Matches,其含义是：当前帧匹配成功的特征点数。
+        //todo 其实现的方法是：为每一个特征点维护一个地图点指针，若该地图点存在，并且其被观测的次数不为0，则该特征点是被匹配成功的
         mnTracked=0;
         mnTrackedVO=0;
         const float r = 5;
-        int n = vCurrentKeys.size();
+        int n = vCurrentKeys.size();// 当前帧的关键点数
+        std::string serializePoint = "";
         for(int i=0;i<n;i++)
         {
             if(vbVO[i] || vbMap[i])
             {
                 cv::Point2f pt1,pt2;
                 cv::Point2f point;
+                
                 if(imageScale != 1.f)
                 {
                     point = vCurrentKeys[i].pt / imageScale;
@@ -182,8 +186,9 @@ cv::Mat FrameDrawer::DrawFrame(float imageScale)
                 if(vbMap[i])
                 {
                     cv::rectangle(im,pt1,pt2,standardColor);
-                    cv::circle(im,point,2,standardColor,-1);
+                    cv::circle(im,point,2,(0,255,255),-1);
                     mnTracked++;
+                    serializePoint+=to_string(mnTracked)+' '+to_string(int(point.x))+' '+to_string(int(point.y))+';';
                 }
                 else // This is match to a "visual odometry" MapPoint created in the last frame
                 {
@@ -193,6 +198,10 @@ cv::Mat FrameDrawer::DrawFrame(float imageScale)
                 }
             }
         }
+        //todo 输出时间戳 - 追踪成功数
+        mvtracked_time.push_back(currentFrame.mTimeStamp);
+        mvtracked_num.push_back(mnTracked);
+        mvtracked_point.push_back(serializePoint);
     }
 
     cv::Mat imWithInfo;

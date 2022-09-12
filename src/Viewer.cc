@@ -361,10 +361,30 @@ void Viewer::Run()
 
             // Stop all threads
             mpSystem->Shutdown();
+            
+            //
+            cout << endl << "Saving Debug Data with index 1"<< endl;
+             mpSystem->SaveDebugData(1);
 
             // Save camera trajectory
-            mpSystem->SaveTrajectoryEuRoC("CameraTrajectory.txt");
+            mpSystem->SaveTrajectoryEuRoC_append("CameraTrajectory.txt");
             mpSystem->SaveKeyFrameTrajectoryEuRoC("KeyFrameTrajectory.txt");
+            // mpFrameDrawer->SaveTrajectoryEuRoC_tracted("path")
+            // cout<<"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<endl;
+            // cout<<mpFrameDrawer->mvtracked_time.size()<<endl;
+            // cout<<mpFrameDrawer->mvtracked_num.size()<<endl;
+            // cout<<"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<endl;
+            ofstream f;
+            f.open("Timestamp_tractedNum.txt");
+            f << fixed;
+            for(int i=0;i<mpFrameDrawer->mvtracked_time.size();i++){
+                f << setprecision(6) << 1e9*mpFrameDrawer->mvtracked_time[i] << " " <<  setprecision(9) 
+                    <<" "<<mpFrameDrawer->mvtracked_num[i]<<endl;
+                f << mpFrameDrawer->mvtracked_point[i]<<endl;
+            }
+            f.close();
+            cout << endl << "End of saving Timestamp_tractedNum.txt"<< endl;
+            
             menuStop = false;
         }
 
